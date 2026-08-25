@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from datetime import date
@@ -58,3 +59,17 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+class FileObjectCreateSchema(BaseModel):
+    dataset_file: str
+    task_file: str | None
+    image_file: str | None
+
+
+class  FileObjectResponseSchema(BaseModel):
+    id: int
+    dataset_file: str
+    task_file: str | None
+    image_file: str | None
+    user_id: int
+    create_date: datetime

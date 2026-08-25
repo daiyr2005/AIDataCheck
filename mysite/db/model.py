@@ -34,6 +34,7 @@ class UserProfile(Base):
         nullable=False
     )
     registered_date: Mapped[date] = mapped_column(Date, default=date.today)
+    file_object: Mapped[List['RefreshToken']] = relationship(back_populates="user",cascade="all, delete-orphan")
 
     refresh_tokens: Mapped[List['RefreshToken']] = relationship(
         back_populates="token_user",
@@ -56,5 +57,20 @@ class RefreshToken(Base):
 
     def __repr__(self):
         return f'{self.token}'
+
+
+class FileObject(Base):
+    __tablename__='file_object'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    dataset_file: Mapped[str] = mapped_column(String)
+    task_file: Mapped[str | None] = mapped_column(String, nullable=True)
+    image_file: Mapped[str | None] = mapped_column(String, nullable=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
+    user:Mapped["UserProfile"] = relationship(back_populates="file_object")
+    created_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+
 
 
