@@ -25,6 +25,7 @@ class UpdateSchema(BaseModel):
     last_name: Optional[str] = None
     username: Optional[str] = None
     email: Optional[EmailStr] = None
+    status: Optional[UserStatusChoice] = None
 
 
 class UserProfileOutSchema(BaseModel):
@@ -57,6 +58,3 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
-
-
-
