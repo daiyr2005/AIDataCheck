@@ -1,12 +1,12 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from mysite.db.model import FileObject
+from mysite.db.model import FileObject,UserProfile
 from mysite.db.schema import FileObjectResponseSchema, FileObjectCreateSchema
 from mysite.db.db import SessionLocal
+from mysite.api.auth import get_current_user
 
-
-object_router = APIRouter(prefix="/objects",tags=["Objects"])
+object_router = APIRouter(prefix="/file",tags=["Objects"])
 
 
 async def get_db():
@@ -17,17 +17,25 @@ async def get_db():
         db.close()
 
 
+
 @object_router.post("/", response_model=FileObjectResponseSchema)
 async def object_create(
     payload: FileObjectCreateSchema,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UserProfile = Depends(get_current_user),
 ):
-    # Если user_id берется из аутентификации или захардкожен, добавьте его:
+    # Опционально: если загрузка файлов доступна только для PRO-пользователей
+    # if current_user.status == UserStatusChoice.basic.value:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Файл жүктөө функционлдулугу pro тарифинде гана жеткиликтүү."
+    #     )
+
     file_object = FileObject(
         dataset_file=payload.dataset_file,
         task_file=payload.task_file,
-        img_file=payload.img_file,
-        # user_id=1  # Укажите нужный user_id
+        image_file=payload.image_file,
+        user_id=current_user.id,  # Автоматически берем ID из токена текущего юзера
     )
 
     db.add(file_object)

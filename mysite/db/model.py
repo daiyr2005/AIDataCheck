@@ -1,4 +1,3 @@
-
 from enum import Enum as PyEnum
 from typing import Optional, List
 from datetime import date, datetime
@@ -19,6 +18,7 @@ class UserStatusChoice(str, PyEnum):
     basic = "basic"
     pro = "pro"
 
+
 class UserProfile(Base):
     __tablename__ = 'user_profiles'
 
@@ -34,9 +34,14 @@ class UserProfile(Base):
         nullable=False
     )
     registered_date: Mapped[date] = mapped_column(Date, default=date.today)
-    file_object: Mapped[List['RefreshToken']] = relationship(back_populates="user",cascade="all, delete-orphan")
 
+    file_objects: Mapped[List['FileObject']] = relationship(
+        "FileObject",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
     refresh_tokens: Mapped[List['RefreshToken']] = relationship(
+        "RefreshToken",
         back_populates="token_user",
         cascade="all, delete-orphan"
     )
@@ -51,7 +56,7 @@ class RefreshToken(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
-    token_user: Mapped["UserProfile"] = relationship(back_populates="refresh_tokens")
+    token_user: Mapped["UserProfile"] = relationship("UserProfile", back_populates="refresh_tokens")
     token: Mapped[str] = mapped_column(String)
     created_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -60,17 +65,12 @@ class RefreshToken(Base):
 
 
 class FileObject(Base):
-    __tablename__='file_object'
+    __tablename__ = 'file_object'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     dataset_file: Mapped[str] = mapped_column(String)
     task_file: Mapped[str | None] = mapped_column(String, nullable=True)
     image_file: Mapped[str | None] = mapped_column(String, nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
-    user:Mapped["UserProfile"] = relationship(back_populates="file_object")
+    user: Mapped["UserProfile"] = relationship("UserProfile", back_populates="file_objects")
     created_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-
-
-

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from datetime import date
@@ -72,4 +72,7 @@ class  FileObjectResponseSchema(BaseModel):
     task_file: str | None
     image_file: str | None
     user_id: int
-    create_date: datetime
+    created_date: datetime
+
+    class Config:
+        from_attributes = True
